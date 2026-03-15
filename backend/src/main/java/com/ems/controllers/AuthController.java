@@ -41,20 +41,26 @@ public class AuthController {
 
   @PostMapping("/login")
   public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
+    System.out.println("Login request received for user: " + loginRequest.getUsername());
+    try {
+      Authentication authentication =
+          authenticationManager.authenticate(
+              new UsernamePasswordAuthenticationToken(
+                  loginRequest.getUsername(), loginRequest.getPassword()));
 
-    Authentication authentication =
-        authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(
-                loginRequest.getUsername(), loginRequest.getPassword()));
+      SecurityContextHolder.getContext().setAuthentication(authentication);
+      String jwt = jwtUtils.generateJwtToken(authentication);
 
-    SecurityContextHolder.getContext().setAuthentication(authentication);
-    String jwt = jwtUtils.generateJwtToken(authentication);
+      UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+      String role = userDetails.getAuthorities().iterator().next().getAuthority();
 
-    UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-    String role = userDetails.getAuthorities().iterator().next().getAuthority();
-
-    return ResponseEntity.ok(
-        new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), role));
+      System.out.println("Login successful for user: " + loginRequest.getUsername());
+      return ResponseEntity.ok(
+          new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), role));
+    } catch (Exception e) {
+      System.out.println("Login failed for user: " + loginRequest.getUsername() + ", Error: " + e.getMessage());
+      throw e;
+    }
   }
 
   @PostMapping("/register")
