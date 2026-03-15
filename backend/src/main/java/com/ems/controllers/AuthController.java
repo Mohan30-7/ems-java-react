@@ -43,12 +43,6 @@ public class AuthController {
   @Value("${ems.frontend.url:http://localhost:5173}")
   private String frontendUrl;
 
-  @GetMapping("/test")
-  public ResponseEntity<String> test() {
-    logger.info("Test auth endpoint reached");
-    return ResponseEntity.ok("Auth endpoint reachable");
-  }
-
   @PostMapping("/login")
   public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
     logger.info("RECEIVED LOGIN REQUEST: username={}", loginRequest.getUsername());
@@ -71,7 +65,7 @@ public class AuthController {
           new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), role));
     } catch (org.springframework.security.core.AuthenticationException e) {
       logger.error("LOGIN FAILED (AuthException): username={}, error={}", loginRequest.getUsername(), e.getMessage());
-      return ResponseEntity.status(401).body(new MessageResponse("Error: " + e.getMessage()));
+      return ResponseEntity.status(401).body(new MessageResponse("Error: Invalid credentials"));
     } catch (Exception e) {
       logger.error("LOGIN FAILED (General): username={}, error={}", loginRequest.getUsername(), e.getMessage());
       return ResponseEntity.status(500).body(new MessageResponse("Error: internal server error"));

@@ -79,8 +79,6 @@ public class WebSecurityConfig {
             auth ->
                 auth.requestMatchers(org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher("/api/auth/**"))
                     .permitAll()
-                    .requestMatchers(org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher("/hello"))
-                    .permitAll()
                     .requestMatchers(org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher("/error"))
                     .permitAll()
                     .anyRequest()
