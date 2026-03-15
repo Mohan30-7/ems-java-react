@@ -100,7 +100,7 @@ public class AuthController {
     user.setResetTokenExpiry(LocalDateTime.now().plusHours(1));
     userRepository.save(user);
 
-    String resetLink = "http://localhost:5173/reset-password?token=" + token;
+    String resetLink = frontendUrl + "/reset-password?token=" + token;
     System.out.println("\n\n=== PASSWORD RESET EMAIL (MOCK) ===");
     System.out.println("To: " + user.getEmail());
     System.out.println("Subject: Password Reset Request");
