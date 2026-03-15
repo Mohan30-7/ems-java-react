@@ -43,9 +43,17 @@ public class AuthController {
   @Value("${ems.frontend.url:http://localhost:5173}")
   private String frontendUrl;
 
+  @GetMapping("/test")
+  public ResponseEntity<String> test() {
+    logger.info("Test auth endpoint reached");
+    return ResponseEntity.ok("Auth endpoint reachable");
+  }
+
   @PostMapping("/login")
   public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
-    logger.info("Login request received for user: {}", loginRequest.getUsername());
+    logger.info("RECEIVED LOGIN REQUEST: username={}", loginRequest.getUsername());
+    System.out.println("DEBUG: RECEIVED LOGIN REQUEST: " + loginRequest.getUsername());
+    System.out.flush();
     try {
       Authentication authentication =
           authenticationManager.authenticate(
@@ -58,12 +66,15 @@ public class AuthController {
       UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
       String role = userDetails.getAuthorities().iterator().next().getAuthority();
 
-      logger.info("Login successful for user: {}", loginRequest.getUsername());
+      logger.info("LOGIN SUCCESS: username={}", loginRequest.getUsername());
       return ResponseEntity.ok(
           new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), role));
+    } catch (org.springframework.security.core.AuthenticationException e) {
+      logger.error("LOGIN FAILED (AuthException): username={}, error={}", loginRequest.getUsername(), e.getMessage());
+      return ResponseEntity.status(401).body(new MessageResponse("Error: " + e.getMessage()));
     } catch (Exception e) {
-      logger.error("Login failed for user: {}, Error: {}", loginRequest.getUsername(), e.getMessage());
-      throw e;
+      logger.error("LOGIN FAILED (General): username={}, error={}", loginRequest.getUsername(), e.getMessage());
+      return ResponseEntity.status(500).body(new MessageResponse("Error: internal server error"));
     }
   }
 
