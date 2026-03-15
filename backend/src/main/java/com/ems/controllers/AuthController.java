@@ -65,10 +65,10 @@ public class AuthController {
           new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), role));
     } catch (org.springframework.security.core.AuthenticationException e) {
       logger.error("LOGIN FAILED (AuthException): username={}, error={}", loginRequest.getUsername(), e.getMessage());
-      return ResponseEntity.status(401).body(new MessageResponse("Error: Invalid credentials"));
+      return ResponseEntity.status(401).body(new MessageResponse("Invalid credentials"));
     } catch (Exception e) {
       logger.error("LOGIN FAILED (General): username={}, error={}", loginRequest.getUsername(), e.getMessage());
-      return ResponseEntity.status(500).body(new MessageResponse("Error: internal server error"));
+      return ResponseEntity.status(500).body(new MessageResponse("internal server error"));
     }
   }
 
@@ -76,14 +76,14 @@ public class AuthController {
   public ResponseEntity<?> registerUser(@RequestBody SignupRequest signUpRequest) {
     if (userRepository.existsByUsername(signUpRequest.getUsername())) {
       return ResponseEntity.badRequest()
-          .body(new MessageResponse("Error: Username is already taken!"));
+          .body(new MessageResponse("Username is already taken!"));
     }
 
     if (signUpRequest.getPhoneNumber() != null) {
       String digits = signUpRequest.getPhoneNumber().replaceAll("\\D", "");
       if (!digits.isEmpty() && digits.length() < 10) {
         return ResponseEntity.badRequest()
-            .body(new MessageResponse("Error: Phone number must be at least 10 digits."));
+            .body(new MessageResponse("Phone number must be at least 10 digits."));
       }
     }
 

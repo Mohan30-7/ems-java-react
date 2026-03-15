@@ -39,14 +39,14 @@ public class EmployeeController {
   public ResponseEntity<?> createEmployee(@RequestBody SignupRequest request) {
     if (userRepository.existsByUsername(request.getUsername())) {
       return ResponseEntity.badRequest()
-          .body(new MessageResponse("Error: Username is already taken!"));
+          .body(new MessageResponse("Username is already taken!"));
     }
 
     if (request.getPhoneNumber() != null) {
       String digits = request.getPhoneNumber().replaceAll("\\D", "");
       if (!digits.isEmpty() && digits.length() < 10) {
         return ResponseEntity.badRequest()
-            .body(new MessageResponse("Error: Phone number must be at least 10 digits."));
+            .body(new MessageResponse("Phone number must be at least 10 digits."));
       }
     }
 
@@ -84,7 +84,7 @@ public class EmployeeController {
       return ResponseEntity.ok(new MessageResponse("Employee deleted successfully!"));
     } catch (Exception e) {
       return ResponseEntity.internalServerError()
-          .body(new MessageResponse("Error: " + e.getMessage()));
+          .body(new MessageResponse("" + e.getMessage()));
     }
   }
 
@@ -115,7 +115,7 @@ public class EmployeeController {
         String digits = request.getPhoneNumber().replaceAll("\\D", "");
         if (!digits.isEmpty() && digits.length() < 10) {
           return ResponseEntity.badRequest()
-              .body(new MessageResponse("Error: Phone number must be at least 10 digits."));
+              .body(new MessageResponse("Phone number must be at least 10 digits."));
         }
       }
 
@@ -130,7 +130,7 @@ public class EmployeeController {
             && !user.getUsername().equals(request.getUsername())) {
           if (userRepository.existsByUsername(request.getUsername())) {
             return ResponseEntity.badRequest()
-                .body(new MessageResponse("Error: Username is already taken!"));
+                .body(new MessageResponse("Username is already taken!"));
           }
           user.setUsername(request.getUsername());
         }
@@ -155,7 +155,7 @@ public class EmployeeController {
       return ResponseEntity.ok(new MessageResponse("Employee updated successfully!"));
     } catch (Exception e) {
       return ResponseEntity.internalServerError()
-          .body(new MessageResponse("Error: " + e.getMessage()));
+          .body(new MessageResponse("" + e.getMessage()));
     }
   }
 
