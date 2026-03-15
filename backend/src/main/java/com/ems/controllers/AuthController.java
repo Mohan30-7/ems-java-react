@@ -14,6 +14,8 @@ import com.ems.security.services.UserDetailsImpl;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+  private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+
   @Autowired AuthenticationManager authenticationManager;
 
   @Autowired UserRepository userRepository;
@@ -41,7 +45,7 @@ public class AuthController {
 
   @PostMapping("/login")
   public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
-    System.out.println("Login request received for user: " + loginRequest.getUsername());
+    logger.info("Login request received for user: {}", loginRequest.getUsername());
     try {
       Authentication authentication =
           authenticationManager.authenticate(
@@ -54,11 +58,11 @@ public class AuthController {
       UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
       String role = userDetails.getAuthorities().iterator().next().getAuthority();
 
-      System.out.println("Login successful for user: " + loginRequest.getUsername());
+      logger.info("Login successful for user: {}", loginRequest.getUsername());
       return ResponseEntity.ok(
           new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), role));
     } catch (Exception e) {
-      System.out.println("Login failed for user: " + loginRequest.getUsername() + ", Error: " + e.getMessage());
+      logger.error("Login failed for user: {}, Error: {}", loginRequest.getUsername(), e.getMessage());
       throw e;
     }
   }
